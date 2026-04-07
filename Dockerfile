@@ -2,29 +2,26 @@ FROM perl:5.36-slim
 
 WORKDIR /app
 
-# Dependencias del sistema (incluye gcc para módulos XS)
+# Dependencias del sistema (gcc para módulos XS de Perl)
 RUN apt-get update && apt-get install -y \
-    libssl-dev ca-certificates build-essential libexpat1-dev \
+    libssl-dev libssl3 ca-certificates \
+    build-essential libexpat1-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Módulos Perl necesarios
+# Módulos Perl no-core necesarios
+# (Digest::SHA, Encode, Scalar::Util, List::Util, MIME::Base64,
+#  File::Path ya vienen en perl:5.36 — no los reinstalamos)
 RUN cpanm --notest --quiet \
     HTTP::Daemon \
-    HTTP::Status \
+    HTTP::Message \
     HTTP::Tiny \
     JSON \
-    MIME::Base64 \
-    Digest::SHA \
-    File::Path \
-    Encode \
-    Scalar::Util \
-    List::Util \
     Net::SSLeay \
     IO::Socket::SSL
 
 COPY . .
 
-# Crear carpetas de datos (se sobreescriben con el volumen en Railway)
+# Crear carpetas de datos
 RUN mkdir -p data uploads
 
 EXPOSE 3000
