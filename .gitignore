@@ -1,0 +1,20 @@
+# No subir datos ni fotos al repositorio
+data/
+uploads/
+
+# No subir la clave API
+.env
+
+# Archivos de Windows
+Thumbs.db
+desktop.ini
+.claude/
+node_modules/
+nul
+database.js
+middleware/
+routes/
+server.js
+package.json
+pdf-generator.js
+README.md

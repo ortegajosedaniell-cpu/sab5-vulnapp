@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#7B1A1A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SAB-5 | Gestión de Vulnerabilidades</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- ───────────────────────── LOGIN ───────────────────────────── -->
+<div id="login-screen">
+  <div class="login-card">
+
+    <!-- Cabecera roja con logo -->
+    <div class="login-header">
+      <img src="/img/logo.png" alt="SAB-5 Seguridad Privada" class="login-logo-img">
+      <p class="login-subtitle">Sistema de Gestión de Vulnerabilidades</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="login-body">
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Usuario</label>
+          <input type="text" id="login-user" class="form-input"
+                 placeholder="Ingrese su usuario" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" id="login-pass" class="form-input"
+                 placeholder="Ingrese su contraseña" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="hidden mt-2 error-box"></div>
+        <button type="submit" id="login-btn" class="btn btn-primary btn-full mt-4">
+          Ingresar al sistema
+        </button>
+      </form>
+    </div>
+
+    <div class="login-footer">SAB-5 Seguridad Privada &nbsp;·&nbsp; Sistema Interno &nbsp;·&nbsp; v1.0</div>
+  </div>
+</div>
+
+<!-- ───────────────────────── APP ─────────────────────────────── -->
+<div id="main-app" class="hidden">
+
+  <!-- Navbar -->
+  <nav id="navbar">
+    <div class="nav-brand">
+      <img src="/img/logo.png" alt="SAB-5" class="nav-logo">
+      <div class="nav-brand-text">
+        <span class="nav-title">SAB-5</span>
+        <span class="nav-subtitle">Seguridad Privada</span>
+      </div>
+      <span class="tag" id="nav-role-badge">SUPERVISOR</span>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-user-info">
+        <span class="nav-user-icon">👤</span>
+        <span id="nav-username"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm nav-logout" id="btn-logout">Salir</button>
+    </div>
+  </nav>
+
+  <div id="app">
+
+    <!-- Tabs -->
+    <div class="tabs" id="main-tabs">
+      <button class="tab-btn active" data-tab="reports">📋 Informes</button>
+      <button class="tab-btn" data-tab="new-report">➕ Nuevo Informe</button>
+      <button class="tab-btn hidden" data-tab="admin" id="btn-tab-admin">⚙️ Administración</button>
+    </div>
+
+    <!-- ── TAB INFORMES ── -->
+    <div id="tab-reports" class="tab-content">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="num" id="stat-total">—</div><div class="label">Total</div></div>
+        <div class="stat-card critico"><div class="num" id="stat-critico">—</div><div class="label">Críticos</div></div>
+        <div class="stat-card alto"><div class="num" id="stat-alto">—</div><div class="label">Altos</div></div>
+        <div class="stat-card medio"><div class="num" id="stat-medio">—</div><div class="label">Medios</div></div>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="filter-client" class="form-input" placeholder="🔍 Buscar cliente...">
+        <select id="filter-supervisor" class="form-select hidden">
+          <option value="">Todos los supervisores</option>
+        </select>
+        <select id="filter-risk" class="form-select">
+          <option value="">Todos los niveles</option>
+          <option value="Crítico">🔴 Crítico</option>
+          <option value="Alto">🟠 Alto</option>
+          <option value="Medio">🔵 Medio</option>
+          <option value="Bajo">🟢 Bajo</option>
+        </select>
+        <input type="date" id="filter-date-from" class="form-input" title="Desde">
+        <input type="date" id="filter-date-to"   class="form-input" title="Hasta">
+        <button class="btn btn-primary btn-sm" id="btn-filter">🔎 Filtrar</button>
+        <button class="btn btn-ghost btn-sm" id="btn-clear-filters">✕ Limpiar</button>
+        <button class="btn btn-ghost btn-sm hidden" id="btn-export-csv">⬇ CSV</button>
+      </div>
+
+      <div id="reports-list">
+        <div class="empty-state">
+          <div class="icon">📋</div>
+          <p>Cargando informes...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB NUEVO INFORME ── -->
+    <div id="tab-new-report" class="tab-content hidden">
+      <div id="report-form-container"></div>
+    </div>
+
+    <!-- ── TAB ADMIN ── -->
+    <div id="tab-admin" class="tab-content hidden">
+      <!-- generado por JS -->
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MODAL DETALLE INFORME ── -->
+<div class="modal-overlay hidden" id="modal-report">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Informe de Vulnerabilidad</h2>
+      <button class="btn btn-ghost btn-icon" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ── MODAL USUARIO ── -->
+<div class="modal-overlay hidden" id="modal-user">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="user-modal-title">Nuevo Usuario</h2>
+      <button class="btn btn-ghost btn-icon" id="user-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="user-form" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label">Nombre completo <span class="required">*</span></label>
+          <input type="text" id="u-fullname" class="form-input" placeholder="Ej: Carlos Rodríguez" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Usuario <span class="required">*</span></label>
+            <input type="text" id="u-username" class="form-input" placeholder="sin espacios">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rol <span class="required">*</span></label>
+            <select id="u-role" class="form-select">
+              <option value="supervisor">👮 Supervisor</option>
+              <option value="admin">⚙️ Administrador</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña <span class="required">*</span></label>
+          <input type="password" id="u-password" class="form-input" placeholder="Mínimo 6 caracteres">
+          <span class="hint">En edición: dejá vacío para no cambiar</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select id="u-active" class="form-select">
+            <option value="1">🟢 Activo</option>
+            <option value="0">🔴 Inactivo</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="user-modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="user-modal-save">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LIGHTBOX ── -->
+<div class="modal-overlay hidden" id="lightbox" style="background:rgba(0,0,0,.93);">
+  <img id="lightbox-img" src="" alt="Foto"
+       style="max-width:96vw;max-height:92vh;border-radius:8px;cursor:zoom-out;">
+</div>
+
+<!-- ── TOAST ── -->
+<div id="toast"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

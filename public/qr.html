@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAB-5 | Acceso Supervisores</title>
+  <style>
+    :root { --primary: #7B1A1A; --dark: #5A1010; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #3D0A0A, #7B1A1A, #9E2626);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .card {
+      background: #fff; border-radius: 20px;
+      padding: 2.5rem 2rem; max-width: 420px; width: 100%;
+      box-shadow: 0 24px 72px rgba(0,0,0,.45);
+      text-align: center;
+    }
+    .logo { height: 56px; filter: none; margin-bottom: .5rem; }
+    .title {
+      font-size: 1.15rem; font-weight: 800; color: var(--primary);
+      margin: .75rem 0 .25rem;
+    }
+    .subtitle {
+      font-size: .78rem; color: #6b4040; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .4px;
+      margin-bottom: 1.75rem;
+    }
+    .divider {
+      border: none; border-top: 2px solid #f0e0e0; margin: 1.5rem 0;
+    }
+    .qr-wrap {
+      background: #fdf5f5; border: 2px solid #f0e0e0;
+      border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+      display: inline-block; width: 100%;
+    }
+    #qr-img {
+      width: 220px; height: 220px;
+      border-radius: 8px; display: block; margin: 0 auto;
+    }
+    #qr-loading {
+      width: 220px; height: 220px;
+      background: #f5eded; border-radius: 8px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      color: #a08080; font-size: .85rem;
+    }
+    .url-box {
+      background: #fdf5f5; border: 2px solid #e8d8d8;
+      border-radius: 10px; padding: .85rem 1rem;
+      font-family: monospace; font-size: 1.05rem;
+      font-weight: 700; color: var(--primary);
+      word-break: break-all; margin-bottom: 1rem;
+      letter-spacing: .5px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: .4rem; padding: .65rem 1.4rem; border-radius: 10px;
+      font-size: .875rem; font-weight: 700; cursor: pointer;
+      border: 2px solid transparent; transition: all .2s;
+      font-family: inherit; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); width: 100%; margin-bottom: .6rem; }
+    .btn-primary:hover { background: var(--dark); }
+    .btn-ghost { background: transparent; color: var(--primary); border-color: #e8d8d8; width: 100%; }
+    .btn-ghost:hover { background: #fdf5f5; }
+    .instructions {
+      background: #fff8f0; border: 1px solid #fed7aa;
+      border-radius: 10px; padding: 1rem; text-align: left;
+      margin-top: 1rem;
+    }
+    .instructions-title {
+      font-size: .75rem; font-weight: 800; color: #92400e;
+      text-transform: uppercase; letter-spacing: .4px; margin-bottom: .5rem;
+    }
+    .instructions ol { padding-left: 1.25rem; }
+    .instructions li { font-size: .82rem; color: #78350f; margin-bottom: .3rem; line-height: 1.5; }
+    .footer {
+      margin-top: 1.5rem; font-size: .68rem;
+      color: #a08080; border-top: 1px solid #f0e0e0; padding-top: .75rem;
+    }
+    .network-badge {
+      display: inline-flex; align-items: center; gap: .3rem;
+      background: #dcfce7; color: #166534;
+      border-radius: 20px; padding: 3px 10px; font-size: .72rem;
+      font-weight: 700; margin-bottom: 1rem;
+    }
+    @media print {
+      body { background: white; }
+      .btn { display: none; }
+      .card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <img src="/img/logo.png" alt="SAB-5" class="logo">
+  <div class="title">Acceso al Sistema</div>
+  <div class="subtitle">SAB-5 Seguridad Privada</div>
+
+  <div class="network-badge">🟢 Red Local WiFi</div>
+
+  <div class="qr-wrap">
+    <div id="qr-loading">Generando QR...</div>
+    <img id="qr-img" src="" alt="QR" style="display:none;">
+  </div>
+
+  <div id="url-box" class="url-box">Cargando...</div>
+
+  <button class="btn btn-primary" id="btn-copy">📋 Copiar enlace</button>
+  <button class="btn btn-ghost" onclick="window.print()">🖨 Imprimir este código</button>
+
+  <div class="instructions">
+    <div class="instructions-title">📱 ¿Cómo conectarse?</div>
+    <ol>
+      <li>Conectá el celular a la misma red WiFi que esta PC.</li>
+      <li>Abrí la cámara y apuntá al código QR, o escribí la dirección de arriba en el navegador.</li>
+      <li>Iniciá sesión con tu usuario y contraseña.</li>
+      <li>Los informes se guardan automáticamente y el administrador los verá al instante.</li>
+    </ol>
+  </div>
+
+  <div class="footer">SAB-5 Seguridad Privada &nbsp;·&nbsp; Sistema Interno &nbsp;·&nbsp; v1.0</div>
+</div>
+
+<script>
+(async () => {
+  let networkUrl = window.location.origin;
+
+  try {
+    // Intentar obtener la IP de red real desde el servidor
+    const token = localStorage.getItem('sr_token');
+    if (token) {
+      const res = await fetch('/api/network-info', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        networkUrl = data.url;
+      }
+    }
+  } catch {}
+
+  // Mostrar URL
+  const urlBox = document.getElementById('url-box');
+  urlBox.textContent = networkUrl;
+
+  // Generar QR con servicio externo (requiere internet en la PC del admin)
+  const qrImg = document.getElementById('qr-img');
+  const qrLoading = document.getElementById('qr-loading');
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(networkUrl)}`;
+
+  qrImg.onload = () => {
+    qrLoading.style.display = 'none';
+    qrImg.style.display = 'block';
+  };
+  qrImg.onerror = () => {
+    qrLoading.textContent = 'Sin conexión a internet.\nUsá la dirección de abajo.';
+    qrLoading.style.whiteSpace = 'pre-line';
+    qrLoading.style.fontSize = '.8rem';
+  };
+  qrImg.src = qrSrc;
+
+  // Copiar URL
+  document.getElementById('btn-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(networkUrl).then(() => {
+      const btn = document.getElementById('btn-copy');
+      btn.textContent = '✅ Copiado!';
+      setTimeout(() => { btn.textContent = '📋 Copiar enlace'; }, 2000);
+    });
+  });
+})();
+</script>
+</body>
+</html>
