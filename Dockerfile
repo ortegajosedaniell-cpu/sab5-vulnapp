@@ -2,9 +2,9 @@ FROM perl:5.36-slim
 
 WORKDIR /app
 
-# Dependencias del sistema
+# Dependencias del sistema (incluye gcc para módulos XS)
 RUN apt-get update && apt-get install -y \
-    libssl-dev ca-certificates \
+    libssl-dev ca-certificates build-essential libexpat1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Módulos Perl necesarios
@@ -19,8 +19,8 @@ RUN cpanm --notest --quiet \
     Encode \
     Scalar::Util \
     List::Util \
-    IO::Socket::SSL \
-    LWP::Protocol::https
+    Net::SSLeay \
+    IO::Socket::SSL
 
 COPY . .
 
